@@ -1,0 +1,13 @@
+.math {
+    text-align: left;
+
+}
+.eqno {
+    float: right;
+    background-color: #DFF1FF;
+}
+
+.bolditalic {
+	font-weight: bold;
+	font-style: italic;
+}

@@ -1,0 +1,71 @@
+              Solution initiale
+1         :  1=Choc Mobile
+1.D0,1.0D5      	: RHO Pression dans la zone de basse pression
+00.D0	  		: Vitesse dans la zone de basse pression
+Saut de pression du choc
+2. 			:p2/p1
+
+2		: = tube à choc (Temperrature initiale constante)
+1.D0,1.0D5      	: RHO Pression dans la zone de basse pression
+00.D0	  		: Vitesse dans la zone de basse pression
+Saut de pression du choc
+15. 			:p2/p1
+
+3		: = Ecoulement au repos, uniforme
+1.D0,1.0D5      	: RHO Pression
+00.D0	     		: Vitesse
+
+
+              2		: = tube à choc (Temperrature initiale constante)
+1.D0,1.0D5      	: RHO Pression dans la zone de basse pression
+00.D0	  		: Vitesse dans la zone de basse pression
+Saut de pression du choc
+2. 			:p2/p1
+
+
+1         :  1=Choc Mobile
+1.D0,1.0D5      	: RHO Pression dans la zone de basse pression
+00.D0	  		: Vitesse dans la zone de basse pression
+Saut de pression du choc
+5. 			:p2/p1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

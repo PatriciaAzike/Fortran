@@ -1,0 +1,66 @@
+.. _mesh_section:
+
+Mesh
+****
+
+Introduction
+============
+
+The domain :math:`\mathcal{V}` is represented by a computationnal domain made of a representation of elementary volumes (cells) :math:`\mathcal{V}_i` such as \:
+
+:math:`\mathcal{V}=\cup\mathcal{V}_i`.
+
+.. important::
+ Here, only  1D or 2D structured meshes are considered: the number of neighbours of a cell is constant (2 in 1D, 4 in 2D)  and the numbering of elementary volumes :math:`\mathcal{V}_i` is ordered.
+
+1D Mesh
+=======
+
+In 1D, the cells are usually numbered with index *i*.
+
+ .. figure:: ./_static/chapitre1_img/chapitre1_1.jpg
+    :scale: 75%
+    :align: left
+
+    : 1D mesh of a domain :math:`\mathcal{V}` with its elementary volumes (cells) :math:`\mathcal{V}_i` 
+
+
+In 1D,  to obtain a **structured** mesh one must have \:
+
+ * The number of cells and the chosen numbering  (index values of the 1rst and last cell): usually *i* is used for the *x* direction.
+ * The value of the volume, this is the length of each cell (constant or not) usually nammed :math:`\Delta x`
+
+2D mesh
+=======
+
+.. figure:: ./_static/chapitre1_img/chapitre1_2.jpg
+    :scale: 75%
+    :align: left
+
+    : 2D Mesh of a domain :math:`\mathcal{V}` in elementary volume :math:`\mathcal{V}_i`
+
+
+In 2D, to obtain a **structured** mesh one must have:
+
+ * The number of cells and the chosen numbering  (index values of the 1rst and last cell in each direction): generally *i* is used for the *x* direction and *j* for the transverse direction.
+ * The value of the volume, this is the area of each cell, the surface of the boundary of the cell (face), this is the length of each of the 4 faces of the cell, and the exiting normal to every face :math:`\vec{n}_k`  , *k* being the number of the face, *k* is varying from 1 to 4. 
+
+.. _figure_2Dcell:
+
+.. figure:: ./_static/chapitre1_img/chapitre1_3.jpg
+    :scale: 100%
+    :align: center
+
+    General quadrangle cell of a 2D mesh 
+
+
+
+.. warning::
+   For the code development (from 1D to 2D) the numbering of the faces is the same as the one depicted in  :numref:`figure_2Dcell`. Bottom face is number 1, then conterclockwise numbering.
+
+Examples
+========
+
+.. toctree:: 
+  
+   chap2_mesh_exemple

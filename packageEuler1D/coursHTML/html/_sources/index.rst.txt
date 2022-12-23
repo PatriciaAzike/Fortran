@@ -1,0 +1,33 @@
+.. include:: _static/myDirectives.rst
+
+.. figure:: ./_static/logo_amu.jpg
+     :scale: 100%
+     :align: left
+
+
+Cours de l'Ecole d'Ingénieurs  **Polytech Marseille** pour les Elèves de 5A - niveau M2 - du Dpt Méchanique Energétique.
+
+Parcours "Simulations Avancées et Mécanique et Thermique"
+
+Package to download
+===================
+
+Here is the zip file containing  the package required for this course:  :download:`zip do download <mydoc/packageEULER1D.zip>`
+
+****************************************
+Finite Volume method : from 1D to MultiD
+****************************************
+
+
+.. toctree:: 
+   :numbered:
+   :maxdepth: 3
+   :caption: The chapters
+
+
+   chapitre1
+   chapitre2
+   chapitre3 
+   chapitre4
+   chapitre5
+

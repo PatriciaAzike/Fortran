@@ -1,0 +1,9 @@
+     Fluide gazeux Mono espece  Gaz Parfait
+7
+1.4	: gamma
+717.   : Cv
+1.D5	: pression standard
+1.	: Rho standard
+0.d0  : Energie de formation
+9.0D-5 :Viscisté dynamique
+0.7	: Prandtl 

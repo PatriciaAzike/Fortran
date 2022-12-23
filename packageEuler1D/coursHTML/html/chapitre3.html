@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3. Projection of momentum equation &mdash; Finite Volume method : from 1D to 2D  0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/ericStyle.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Managing the fluxes" href="chapitre4.html" />
+    <link rel="prev" title="2.4.1. One-dimensionnal example" href="chap2_mesh_exemple.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Finite Volume method : from 1D to 2D 
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">The chapters</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="chapitre1.html">1. General Finite Volume Formulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre2.html">2. Mesh</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Projection of momentum equation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">3.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#momentum-equation">3.2. Momentum equation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre4.html">4. Managing the fluxes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre5.html">5. Boundary Conditions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Finite Volume method : from 1D to 2D </a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>3. Projection of momentum equation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/chapitre3.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="projection-of-momentum-equation">
+<h1>3. Projection of momentum equation<a class="headerlink" href="#projection-of-momentum-equation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>3.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The momentum equation is a vectorial equation that must be projected on a fixed set of axes <span class="math notranslate nohighlight">\(\mathcal{R}\)</span> with  its base frame <span class="math notranslate nohighlight">\((\mathcal{O}, \vec{i}, \vec{j})\)</span>.  Nevertheless, the computation of the fluxes is done is a local frame <span class="math notranslate nohighlight">\((\mathcal{O'}, \vec{n}, \vec{\tau})\)</span>, the vector <span class="math notranslate nohighlight">\(\vec{n}\)</span> is the exiting normal vector to the k-<em>th</em> face of the <span class="math notranslate nohighlight">\(\mathcal{V}_i\)</span> elemental volume.</p>
+<div class="figure align-center" id="id1">
+<span id="figure-localaxes"></span><a class="reference internal image-reference" href="_images/fixed_local_frame.jpg"><img alt="_images/fixed_local_frame.jpg" src="_images/fixed_local_frame.jpg" style="width: 623.0px; height: 476.0px;" /></a>
+<p class="caption"><span class="caption-number">Figure 3.1 </span><span class="caption-text">Projection of the local frame in the fixed frame.</span></p>
+<div class="legend">
+The projection rules are :</div>
+</div>
+<div class="math notranslate nohighlight" id="equation-eq-local-in-fixed">
+<span class="eqno">(3.1)<a class="headerlink" href="#equation-eq-local-in-fixed" title="Permalink to this equation">¶</a></span>\[\begin{split}\left\{\begin{matrix}\vec{n}=cos(\theta)\vec{i}+sin(\theta)\vec{j}\\\vec{\tau}=-sin(\theta)\vec{i}+cos(\theta)\vec{j}\\\end{matrix}\right.\end{split}\]</div>
+<p>and reversely :</p>
+<div class="math notranslate nohighlight" id="equation-local">
+<span class="eqno">(3.2)<a class="headerlink" href="#equation-local" title="Permalink to this equation">¶</a></span>\[\begin{split}\left\{\begin{matrix}\vec{i}=cos(\theta)\vec{n}\ -\ sin(\theta)\vec{\tau}\\\ \vec{j}=sin(\theta)\vec{n\ }\ +\ cos(\theta)\vec{\tau}\\\end{matrix}\right.\end{split}\]</div>
+</div>
+<div class="section" id="momentum-equation">
+<h2>3.2. Momentum equation<a class="headerlink" href="#momentum-equation" title="Permalink to this headline">¶</a></h2>
+<p>We develop and project the momentum equation for perfect fluid in its discrete form given by <a class="reference internal" href="chapitre1.html#equation-eq-godunov">Eq.1.6</a> applied to the momentum component of the <span class="math notranslate nohighlight">\(U\)</span> vector:
+<span class="math notranslate nohighlight">\(\vec{\rho u}_i^{n+1}=\vec{\rho u}_i^n-\frac{\Delta t}{V_i}\sum_{k=1, N_{face}}{{\vec{F}}_{i,k}(\vec{\rho V}).{\vec{n}}_{i,k}A_{I,k}}\)</span></p>
+<p>The expression of flux of the velocity field is given by :
+<span class="math notranslate nohighlight">\({\vec{F}}_{i,k}(\vec{\rho u})= \left( \vec{u}\vec{u} + p {\bar{\bar{I_d}}} \right)_{i,k}^*\)</span>.</p>
+<p>The <strong>upperscript *</strong> means that this flux is evaluated at the cell boundary (namely face <em>k</em>)  with an appropriate formulation. The formulation of the flux solution is out of the topic of this course which is reduced to extend existing solutions. Such solutions are given by Riemann solvers (exact or approximate). This solution is obtained in the local frame associated to the considered face. Without any ambiguous notation, the flux formulae can be reduced to :
+<span class="math notranslate nohighlight">\({\vec{F}}_{i,k}(\vec{\rho u})={\vec{F}}_{k}(\vec{\rho u})= \left( \vec{u}\vec{u} + p {\bar{\bar{I_d}}} \right)_k^* =  \vec{u}^*\vec{u}^* + p^* {\bar{\bar{I_d}}}\)</span></p>
+<p>The velocity vector solution is projected in the local vector :</p>
+<p><span class="math notranslate nohighlight">\(\vec{u}^* = u^*\vec{n}_k + v^*\vec{\tau}_k\)</span> then
+<span class="math notranslate nohighlight">\(\left( \rho \vec{u} \vec{u} \right)^* . \vec{n}_k = {\rho}_k^* u_k^* \vec{u}_k^*\)</span>.</p>
+<p>In the same way for the pressure tensor :</p>
+<p><span class="math notranslate nohighlight">\(\left( p {\bar{\bar{I_d}}} \right)^* . \vec{n}_k = p_k^* \vec{n}_k\)</span>.</p>
+<p>Then, the numerical scheme can be developed according :</p>
+<p><span class="math notranslate nohighlight">\(\frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i=\ \sum_{k=1,Nface}{\left(\rho_k^*u_k^*{\vec{u}}_k^*+p_k^*{\vec{n}}_k\right)A_k}\)</span></p>
+<p>The projection of the vector <span class="math notranslate nohighlight">\(u_k^*{\vec{u}}_k^*\)</span> leads to :</p>
+<div class="math notranslate nohighlight" id="equation-eq-qdm-projetee-mix">
+<span class="eqno">(3.3)<a class="headerlink" href="#equation-eq-qdm-projetee-mix" title="Permalink to this equation">¶</a></span>\[\frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i=\ \sum_{k=1,Nface}{\left(\rho_k^*u_k^*u_k^*+p_k^*\right)A_k\ {\vec{n}}_k+\rho_k^*u_k^*v_k^*A_k\ {\vec{\tau}}_k}\]</div>
+<p>In this last equation, the left-hand-side is computed in the basis vectors <span class="math notranslate nohighlight">\((\mathcal{R}, \vec{i}, \vec{j})\)</span> which is the frame of the lab, while the right-hand-side is computed in the local basis (associated to the face) <span class="math notranslate nohighlight">\((\mathcal{R'}, \vec{n}, \vec{\tau})\)</span>. We finally obtain the numerical scheme (1rst order in time):</p>
+<div class="math notranslate nohighlight" id="equation-eq-qdm-projetee-fixe">
+<span class="eqno">(3.4)<a class="headerlink" href="#equation-eq-qdm-projetee-fixe" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{matrix}\frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i\ \\=\\\sum_{k=1,Nface}{\begin{matrix}\left[\rho_k^*u_k^*A_k\left\{u_k^*cos(\theta_k)\ -\ v_k^*sin(\theta_k)\right\}+p_k^*\ cos(\theta_k)A_k\right]\ \vec{i}\\\left[\rho_k^*u_k^*A_k\left\{u_k^*sin(\theta_k)\ +\ v_k^*cos(\theta_k)\right\}+p_k^*\ sin(\theta_k)A_k\right]\ \vec{j}\\\end{matrix}+}\\\end{matrix}\end{split}\]</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Then, in 1D (in the <em>x</em>-direction), only the component on <span class="math notranslate nohighlight">\(\vec{i}\)</span> of the momentum flux is remaining and equal to <span class="math notranslate nohighlight">\(\left[\rho_k^*u_k^{*2}A_k+p_k^*\ A_k\right]\ (\pm)\vec{i}\)</span> (because <span class="math notranslate nohighlight">\({\vec{n}}_k=\pm\vec{i}\Longleftrightarrow\theta=0+k\pi\)</span> while <span class="math notranslate nohighlight">\(\vec{\tau}_k=\vec{0}\)</span> and also <span class="math notranslate nohighlight">\(v=0\)</span>).</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>The projections of the velocity vector are :
+<span class="math notranslate nohighlight">\(\vec{u}=u\vec{i}+v\ \vec{j}=\left[ucos(\theta)+vsin(\theta)\right]\vec{n}\ +\left[-usin(\theta)+vcos(\theta)\right]\vec{\tau}\)</span> that yields :
+<span class="math notranslate nohighlight">\(\left\{\begin{matrix}u^*=u cos(\theta)+v sin(\theta)\\ v^*=-u sin(\theta)+v cos(\theta)\\ \end{matrix}\right.\)</span></p>
+<p>and reversely:</p>
+<p class="last"><span class="math notranslate nohighlight">\(\left\{\begin{matrix}u=u^*cos(\theta)-v^*sin(\theta)\\v=u^*sin(\theta)+v^*cos(\theta)\\\end{matrix}\right.\)</span></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="chapitre4.html" class="btn btn-neutral float-right" title="4. Managing the fluxes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="chap2_mesh_exemple.html" class="btn btn-neutral float-left" title="2.4.1. One-dimensionnal example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Eric Daniel - Aix-Marseille University / Polytech Marseille
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

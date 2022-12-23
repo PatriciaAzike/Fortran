@@ -1,0 +1,88 @@
+*******************
+Managing the fluxes
+*******************
+
+Introduction
+============
+
+As said previoulsy, we do not develop the way how to compute the solution of a Riemann problem. It is assumed that this point is known. In this section we will indicate how to manage the fluxes to avoid extra calculations and thus save computing time. The basis of this section is the equation :eq:`eq_egalite_flu` reminded here \:
+
+.. math:: \vec{F}_I\left(U\right).{\vec{n}}_{I,K} + \vec{F}_J\left(U\right).{\vec{n}}_{J,K}=0
+
+Scalar equation in 1D code
+==========================
+
+Let's consider here 1D mesh with the characteristics of the one depicted in :numref:`figure_1Dmesh`. For the cell *i*, the face cell number 2 is between cell *i* and *i+1*, the face cell number 4 is between cell *i* and *i-1*. 
+The fluxes must obey the property established in Chapter 1 and given by :eq:`eq_egalite_flu`. 
+
+.. _figure_1Dcell:
+
+.. figure:: ./_static/chapitre4_img/1Dcell.jpg
+    :scale: 100%
+    :align: center
+
+    1D cell
+
+
+Let's consider the scalar equation of mass conservation in its discrete form (from :eq:`eq_godunov`) in cell *i* : 
+
+.. math:: \rho_i^{n+1}=\rho_i^n+\frac{\Delta t}{V_i}\sum_{k}{{\rho_k^*\vec{u}}_k^*.{\vec{n}}_{i,k}A_{i,k}}
+
+
+In 1D, there are only 2 faces, namely 2 and 4. The flux of the density is :math:`\rho^* u^* \vec{n}_{i,k}`  then the previous equation is then
+
+.. math:: \rho_i^{n+1}=\rho_i^n+\frac{\Delta t}{V_i}\left\{{\rho_{i,2}^*\vec{u}}_{i,2}^*.{\vec{n}}_{i,2}A_{i,2}+{\rho_{i,4}^*\vec{u}}_{i,4}^*.{\vec{n}}_{i,4}A_{i,4}\right\}
+
+Consider now the cell *i+1*. Both cell *i* and *i+1* have a face in common which face *i,2* or *i+1,4*. On this face, the summation of the fluxes must be equal to zero on this face and that is expressed by: 
+
+.. math:: {\rho_{i,2}^*\vec{u}}_{i,2}^*.{\vec{n}}_{i,2}A_{i,2}+{\rho_{i+1,4}^*\vec{u}}_{i+1,4}^*.{\vec{n}}_{i+1,4}A_{i+1,4}=0
+
+Whatever the face :math:`{\rho_{i,k}^*\vec{u}}_{i,k}^*.{\vec{n}}_{i,k} = \rho_{i,k}^* u_{i,k}^*` and obviously  :math:`A_{i,2} = A_{i+1,4}` :
+
+.. math:: \boxed {  \rho_{i+1,4}^* u_{i+1,4}^* = -  \rho_{i,2}^* u_{i,2}^*}
+	:label: eq_egalite_flu_masse
+
+
+.. hint::
+  :eq:`eq_egalite_flu_masse` means that there si no need to calculate the flux in cell *i+1* at face 4: this one has been already computed in cell *i*. Actually, on face 4, the flux must be computed only **once** at the boundary condition (the number of the cell is depending on the numbering...). That remarks allows a substantial cpu time saving.
+
+
+Vectorial equation in 2D code
+==============================
+
+A scalar flux is managed the same way as given by :eq:`eq_egalite_flu_masse` whatever the space dimension. Vectorial fluxes required more attention because of projection in 2 local frames.  Let's consider the cell loacted at *(i,j)=I* and its neighbour *(i+1,j)=J*.
+Then according to :numref:`figure_2Dcell` the common face is the face number *2* for cell *I* and 4 for cell *J* as depicted in the Figure :numref:`figure_2Dcell_flux`.
+
+.. _figure_2Dcell_flux:
+
+.. figure:: ./_static/chapitre4_img/2Dcell.jpg
+    :scale: 75%
+    :align: center
+
+    Commmon face of two neighouring cells 
+
+Obviously, both frames obey :
+
+.. math:: \left\{\begin{matrix}{\vec{n}}_{I,2}=-{\vec{n}}_{J, 4}\\{\vec{\tau}}_{I,2}=-\tau_{J, 4}\\\end{matrix}\right.
+   :label: eq_vectorbase_prop
+
+Then, the flux property \:
+
+.. math:: \vec{F}_I\left(U\right).{\vec{n}}_{I,2}+\vec{F}_J\left(U\right).{\vec{n}}_{J,4}=0
+
+is developped with :math:`F_k^*(\rho\vec{u})=\left(\rho_k^\ast{\vec{u}}_k^\ast{\vec{u}}_k^\ast+p_k^\ast{\bar{\bar{I}}}_d\right)` to lead \:
+
+.. math:: \left(\rho_{I,2}^\ast u_{I,2}^\ast{\vec{u}}_{I,2}^\ast+p_{I,2}^\ast{\vec{n}}_{I,2}\right) + \left(\rho_{J,4}^\ast u_{J,4}^\ast{\vec{u}}_{J,4}^\ast+p_{J,4}^\ast{\vec{n}}_{J,4}\right)=0
+
+The projection of the velocity in the local frames :
+
+.. math:: \begin{matrix}\left(\rho_{I,2}^\ast u_{I,2}^\ast{u_{I,2}^\ast}\vec{n}_{I,2}+p_{I,2}^\ast{\vec{n}}_{I,2}+\rho_{I,2}^\ast u_{I,2}^\ast{v_{I,2}^\ast }\vec{\tau}_{I,2}\right) + \\ \left(\rho_{J,4}^\ast u_{J,4}^\ast{u_{J,4}^\ast}\vec{n}_{J,4}+p_{J,4}^\ast{\vec{n}}_{J,4}+\rho_{J,4}^\ast u_{J,4}^\ast{v_{J,4}^\ast}\vec{\tau}_{J,4}\right) =0 \\ \end{matrix}
+
+Using of the property :eq:`eq_vectorbase_prop` leads to the following relations \:
+
+.. math:: \begin{matrix}  \rho_{I,2}^\ast u_{I,2}^\ast{u_{I,2}^\ast}+p_{I,2}^\ast = \rho_{J,4}^\ast u_{K,J}^\ast{u_{J,4}^\ast}+p_{J,4}^\ast   \\   \rho_{I,2}^\ast u_{I,2}^\ast {v_{I,2}^\ast}=  \rho_{J,4}^\ast u_{J,4}^\ast{v_{J,4}^\ast}  \\ \end{matrix}
+  :label: _eq_fluxQdM_Prop
+
+
+.. hint::
+  :eq:`_eq_fluxQdM_Prop` means that in 2D saving CPU time thanks this property is not negligible: we compute only fluxes for faces 2 and 1 (1 in each direction), the others are obtained by directly affecting the data.

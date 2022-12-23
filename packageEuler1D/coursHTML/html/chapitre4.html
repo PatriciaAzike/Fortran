@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>4. Managing the fluxes &mdash; Finite Volume method : from 1D to 2D  0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/ericStyle.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Boundary Conditions" href="chapitre5.html" />
+    <link rel="prev" title="3. Projection of momentum equation" href="chapitre3.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Finite Volume method : from 1D to 2D 
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">The chapters</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="chapitre1.html">1. General Finite Volume Formulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre2.html">2. Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre3.html">3. Projection of momentum equation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Managing the fluxes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">4.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scalar-equation-in-1d-code">4.2. Scalar equation in 1D code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vectorial-equation-in-2d-code">4.3. Vectorial equation in 2D code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre5.html">5. Boundary Conditions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Finite Volume method : from 1D to 2D </a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>4. Managing the fluxes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/chapitre4.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="managing-the-fluxes">
+<h1>4. Managing the fluxes<a class="headerlink" href="#managing-the-fluxes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>4.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>As said previoulsy, we do not develop the way how to compute the solution of a Riemann problem. It is assumed that this point is known. In this section we will indicate how to manage the fluxes to avoid extra calculations and thus save computing time. The basis of this section is the equation <a class="reference internal" href="chapitre1.html#equation-eq-egalite-flu">Eq.1.5</a> reminded here :</p>
+<div class="math notranslate nohighlight">
+\[\vec{F}_I\left(U\right).{\vec{n}}_{I,K} + \vec{F}_J\left(U\right).{\vec{n}}_{J,K}=0\]</div>
+</div>
+<div class="section" id="scalar-equation-in-1d-code">
+<h2>4.2. Scalar equation in 1D code<a class="headerlink" href="#scalar-equation-in-1d-code" title="Permalink to this headline">¶</a></h2>
+<p>Let’s consider here 1D mesh with the characteristics of the one depicted in <a class="reference internal" href="chap2_mesh_exemple.html#figure-1dmesh"><span class="std std-numref">Figure 2.4</span></a>. For the cell <em>i</em>, the face cell number 2 is between cell <em>i</em> and <em>i+1</em>, the face cell number 4 is between cell <em>i</em> and <em>i-1</em>.
+The fluxes must obey the property established in Chapter 1 and given by <a class="reference internal" href="chapitre1.html#equation-eq-egalite-flu">Eq.1.5</a>.</p>
+<div class="figure align-center" id="id1">
+<span id="figure-1dcell"></span><a class="reference internal image-reference" href="_images/1Dcell.jpg"><img alt="_images/1Dcell.jpg" src="_images/1Dcell.jpg" style="width: 1187.0px; height: 366.0px;" /></a>
+<p class="caption"><span class="caption-number">Figure 4.1 </span><span class="caption-text">1D cell</span></p>
+</div>
+<p>Let’s consider the scalar equation of mass conservation in its discrete form (from <a class="reference internal" href="chapitre1.html#equation-eq-godunov">Eq.1.6</a>) in cell <em>i</em> :</p>
+<div class="math notranslate nohighlight">
+\[\rho_i^{n+1}=\rho_i^n+\frac{\Delta t}{V_i}\sum_{k}{{\rho_k^*\vec{u}}_k^*.{\vec{n}}_{i,k}A_{i,k}}\]</div>
+<p>In 1D, there are only 2 faces, namely 2 and 4. The flux of the density is <span class="math notranslate nohighlight">\(\rho^* u^* \vec{n}_{i,k}\)</span>  then the previous equation is then</p>
+<div class="math notranslate nohighlight">
+\[\rho_i^{n+1}=\rho_i^n+\frac{\Delta t}{V_i}\left\{{\rho_{i,2}^*\vec{u}}_{i,2}^*.{\vec{n}}_{i,2}A_{i,2}+{\rho_{i,4}^*\vec{u}}_{i,4}^*.{\vec{n}}_{i,4}A_{i,4}\right\}\]</div>
+<p>Consider now the cell <em>i+1</em>. Both cell <em>i</em> and <em>i+1</em> have a face in common which face <em>i,2</em> or <em>i+1,4</em>. On this face, the summation of the fluxes must be equal to zero on this face and that is expressed by:</p>
+<div class="math notranslate nohighlight">
+\[{\rho_{i,2}^*\vec{u}}_{i,2}^*.{\vec{n}}_{i,2}A_{i,2}+{\rho_{i+1,4}^*\vec{u}}_{i+1,4}^*.{\vec{n}}_{i+1,4}A_{i+1,4}=0\]</div>
+<p>Whatever the face <span class="math notranslate nohighlight">\({\rho_{i,k}^*\vec{u}}_{i,k}^*.{\vec{n}}_{i,k} = \rho_{i,k}^* u_{i,k}^*\)</span> and obviously  <span class="math notranslate nohighlight">\(A_{i,2} = A_{i+1,4}\)</span> :</p>
+<div class="math notranslate nohighlight" id="equation-eq-egalite-flu-masse">
+<span class="eqno">(4.1)<a class="headerlink" href="#equation-eq-egalite-flu-masse" title="Permalink to this equation">¶</a></span>\[\boxed {  \rho_{i+1,4}^* u_{i+1,4}^* = -  \rho_{i,2}^* u_{i,2}^*}\]</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last"><a class="reference internal" href="#equation-eq-egalite-flu-masse">Eq.4.1</a> means that there si no need to calculate the flux in cell <em>i+1</em> at face 4: this one has been already computed in cell <em>i</em>. Actually, on face 4, the flux must be computed only <strong>once</strong> at the boundary condition (the number of the cell is depending on the numbering…). That remarks allows a substantial cpu time saving.</p>
+</div>
+</div>
+<div class="section" id="vectorial-equation-in-2d-code">
+<h2>4.3. Vectorial equation in 2D code<a class="headerlink" href="#vectorial-equation-in-2d-code" title="Permalink to this headline">¶</a></h2>
+<p>A scalar flux is managed the same way as given by <a class="reference internal" href="#equation-eq-egalite-flu-masse">Eq.4.1</a> whatever the space dimension. Vectorial fluxes required more attention because of projection in 2 local frames.  Let’s consider the cell loacted at <em>(i,j)=I</em> and its neighbour <em>(i+1,j)=J</em>.
+Then according to <a class="reference internal" href="chapitre2.html#figure-2dcell"><span class="std std-numref">Figure 2.3</span></a> the common face is the face number <em>2</em> for cell <em>I</em> and 4 for cell <em>J</em> as depicted in the Figure <a class="reference internal" href="#figure-2dcell-flux"><span class="std std-numref">Figure 4.2</span></a>.</p>
+<div class="figure align-center" id="id2">
+<span id="figure-2dcell-flux"></span><a class="reference internal image-reference" href="_images/2Dcell.jpg"><img alt="_images/2Dcell.jpg" src="_images/2Dcell.jpg" style="width: 666.75px; height: 300.0px;" /></a>
+<p class="caption"><span class="caption-number">Figure 4.2 </span><span class="caption-text">Commmon face of two neighouring cells</span></p>
+</div>
+<p>Obviously, both frames obey :</p>
+<div class="math notranslate nohighlight" id="equation-eq-vectorbase-prop">
+<span class="eqno">(4.2)<a class="headerlink" href="#equation-eq-vectorbase-prop" title="Permalink to this equation">¶</a></span>\[\begin{split}\left\{\begin{matrix}{\vec{n}}_{I,2}=-{\vec{n}}_{J, 4}\\{\vec{\tau}}_{I,2}=-\tau_{J, 4}\\\end{matrix}\right.\end{split}\]</div>
+<p>Then, the flux property :</p>
+<div class="math notranslate nohighlight">
+\[\vec{F}_I\left(U\right).{\vec{n}}_{I,2}+\vec{F}_J\left(U\right).{\vec{n}}_{J,4}=0\]</div>
+<p>is developped with <span class="math notranslate nohighlight">\(F_k^*(\rho\vec{u})=\left(\rho_k^\ast{\vec{u}}_k^\ast{\vec{u}}_k^\ast+p_k^\ast{\bar{\bar{I}}}_d\right)\)</span> to lead :</p>
+<div class="math notranslate nohighlight">
+\[\left(\rho_{I,2}^\ast u_{I,2}^\ast{\vec{u}}_{I,2}^\ast+p_{I,2}^\ast{\vec{n}}_{I,2}\right) + \left(\rho_{J,4}^\ast u_{J,4}^\ast{\vec{u}}_{J,4}^\ast+p_{J,4}^\ast{\vec{n}}_{J,4}\right)=0\]</div>
+<p>The projection of the velocity in the local frames :</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{matrix}\left(\rho_{I,2}^\ast u_{I,2}^\ast{u_{I,2}^\ast}\vec{n}_{I,2}+p_{I,2}^\ast{\vec{n}}_{I,2}+\rho_{I,2}^\ast u_{I,2}^\ast{v_{I,2}^\ast }\vec{\tau}_{I,2}\right) + \\ \left(\rho_{J,4}^\ast u_{J,4}^\ast{u_{J,4}^\ast}\vec{n}_{J,4}+p_{J,4}^\ast{\vec{n}}_{J,4}+\rho_{J,4}^\ast u_{J,4}^\ast{v_{J,4}^\ast}\vec{\tau}_{J,4}\right) =0 \\ \end{matrix}\end{split}\]</div>
+<p>Using of the property <a class="reference internal" href="#equation-eq-vectorbase-prop">Eq.4.2</a> leads to the following relations :</p>
+<div class="math notranslate nohighlight" id="equation-eq-fluxqdm-prop">
+<span class="eqno">(4.3)<a class="headerlink" href="#equation-eq-fluxqdm-prop" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{matrix}  \rho_{I,2}^\ast u_{I,2}^\ast{u_{I,2}^\ast}+p_{I,2}^\ast = \rho_{J,4}^\ast u_{K,J}^\ast{u_{J,4}^\ast}+p_{J,4}^\ast   \\   \rho_{I,2}^\ast u_{I,2}^\ast {v_{I,2}^\ast}=  \rho_{J,4}^\ast u_{J,4}^\ast{v_{J,4}^\ast}  \\ \end{matrix}\end{split}\]</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last"><a class="reference internal" href="#equation-eq-fluxqdm-prop">Eq.4.3</a> means that in 2D saving CPU time thanks this property is not negligible: we compute only fluxes for faces 2 and 1 (1 in each direction), the others are obtained by directly affecting the data.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="chapitre5.html" class="btn btn-neutral float-right" title="5. Boundary Conditions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="chapitre3.html" class="btn btn-neutral float-left" title="3. Projection of momentum equation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Eric Daniel - Aix-Marseille University / Polytech Marseille
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

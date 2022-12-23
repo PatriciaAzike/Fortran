@@ -1,0 +1,58 @@
+One-dimensionnal example
+========================
+
+This example is the one contained in the Fortran package provided for this course. 
+The length of the domain is L (variable *Long_Physique*). The total number of cells is *NX*. 
+
+
+
+The mesh is depected in :numref:`figure_1Dmesh`
+
+ .. _figure_1Dmesh:
+
+ .. figure:: ./_static/chapitre1_img/chapitre1_1Dmesh.jpg
+    :scale: 75%
+    :align: left
+
+    Definition of the 1D mesh used in the Fortran package. The usefulness of ghost cells will de detailed in :ref:`BC_section`
+
+
+
+Each cell is defined by \:
+
+* Its length (volume) :math:`\Delta x = \frac{L}{NX}`
+* Two faces  numbered 2 (right) and 4 (left)
+* For each face the normal vector components. Here (1,0) and (-1,0) for the right (2) and left (4) face, respectively
+* For each face, the surface: here equal to 1.
+
+Numbering
+---------
+
+The numbering of the cell is labeled with index *i* which varies from *0* to *NX+1*. There are two-fictitious cells (0 and NX+1) used for the treatment of boundary conditions. The conservative vector U must be defined in these cells to make the calculation of the flux at face 4 of cell 1 (at face 2 of cell NX) possible.
+
+
+Two-dimensionnal mesh
+=====================
+
+Here is shown what the final 2D mesh should look like at the end of this course.
+
+
+Two lengths are required *Lx* in the *x* direction and *Ly* in the *y* direction. Cells are labeled with the couple *(i,j)* and identically to 1D mesh *i* varies from *0* to *NX+1* and *j* from *0* to *NY+1*.
+
+The mesh is depicted in :numref:`figure_1Dmesh`
+
+ .. _figure_2Dmesh:
+
+ .. figure:: ./_static/chapitre1_img/chapitre1_2Dmesh.jpg
+    :scale: 75%
+    :align: left
+
+    A typical2D mesh expected at the end of the course
+
+
+Each cell is defined by \:
+
+* Its surface (volume) :math:`\Delta x * \Delta y`
+* Four faces  numbered 1 to 4 (See :numref:`figure_2Dcell`)
+* For each face :math:`\vec{n}_k`, the normal vector. 
+* For each face, its length (surface): here equal to :math:`\Delta x` or :math:`\Delta y`

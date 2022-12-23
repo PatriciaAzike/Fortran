@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>5. Boundary Conditions &mdash; Finite Volume method : from 1D to 2D  0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/ericStyle.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="4. Managing the fluxes" href="chapitre4.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Finite Volume method : from 1D to 2D 
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">The chapters</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="chapitre1.html">1. General Finite Volume Formulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre2.html">2. Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre3.html">3. Projection of momentum equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre4.html">4. Managing the fluxes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">5. Boundary Conditions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">5.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extrapolation">5.2. Extrapolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wall-boundary-condition">5.3. Wall Boundary condition</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Finite Volume method : from 1D to 2D </a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>5. Boundary Conditions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/chapitre5.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="boundary-conditions">
+<span id="bc-section"></span><h1>5. Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>5.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The boundary condition treatment is necessary to give a value at the fluxes located at the contour intersecting the boundaries of the domain <span class="math notranslate nohighlight">\(\mathcal{C}_W\)</span> on segments <span class="math notranslate nohighlight">\(\mathcal{C}_{W,I}\)</span>. Here, we will impose the values in ghost cells that insure the required value of the fluxes. It is for this reason that in the 1D code, all the conservative variables are numbered from <em>0</em> to <em>Nx+1</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>i</em> index varying from 1 to Nx refers to an inside cell</li>
+<li><em>i</em> index equal to zero refers to the left (or West) boundary condition</li>
+<li><em>i</em> index equal to <em>Nx+1</em> refers to the right ( East) boundary conditions</li>
+</ul>
+</div></blockquote>
+<p>For <em>i</em> varying from <em>1</em> to <em>NX</em> the general discrete euqation <a class="reference internal" href="chapitre1.html#equation-eq-godunov">Eq.1.6</a> is applied, while for <em>i=0</em> and <em>i=Nx+1</em> a specific numerical treatment is achieved. They are called <strong>ghost cells</strong> because they do not exist in the continuous (actual) domain.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="_images/WestBC.jpg"><img alt="_images/WestBC.jpg" src="_images/WestBC.jpg" style="width: 586.5px; height: 171.75px;" /></a>
+<p class="caption"><span class="caption-number">Figure 5.1 </span><span class="caption-text">West Boundary condution with a ghost cell (I=0)</span></p>
+</div>
+<p>Let’s develop <a class="reference internal" href="chapitre1.html#equation-eq-godunov">Eq.1.6</a> for cell <em>i=1</em> :</p>
+<p><span class="math notranslate nohighlight">\(U_1^{n+1}=U_1^n+\frac{\Delta t}{V_{1}}\sum_{k=2,4,2}{{\vec{F}}_{1,k}.{\vec{n}}_{1,k}A_{1,k}}\)</span></p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The expression <span class="math notranslate nohighlight">\(\sum_{k=2,4,2}{}\)</span> means that in the summation (or in the loop) <em>k</em> varies from 2 to 4 with an increment equal to 2 (then, <em>k=2</em> and <em>4</em>)</p>
+</div>
+<p>and with <a class="reference internal" href="chapitre1.html#equation-eq-expression-flux">Eq.1.7</a></p>
+<p><span class="math notranslate nohighlight">\(U_1^{n+1}=U_1^n+\frac{\Delta t}{V_1}\left({\vec{F}}_{1,2}.{\vec{n}}_{1,2}A_{1,2}+{\vec{F}}_{1,4}.{\vec{n}}_{1,4}A_{1,4}\right)\)</span></p>
+<p>For the 1D scheme we  have :<span class="math notranslate nohighlight">\(\begin{matrix}{\vec{n}}_{1,2}=-{\vec{n}}_{1,4}=\vec{i}\\A_{1,2}=A_{1,4}=1\\\end{matrix}\)</span></p>
+<p>According <a class="reference internal" href="chapitre1.html#equation-eq-expression-flux">Eq.1.7</a>, the flux at the right face (face 2) is</p>
+<div class="math notranslate nohighlight">
+\[{\vec{F}}_{1,2}=\vec{F}(U_1^n,\ U_2^n)\]</div>
+<p>while the flux at face 4 (left face) is :</p>
+<div class="math notranslate nohighlight">
+\[{\vec{F}}_{1,4}=\vec{F}(U_1^n, U_0^n)\]</div>
+<p>In this last relation <span class="math notranslate nohighlight">\(U_0^n\)</span> is not defined by the numerical scheme <a class="reference internal" href="chapitre1.html#equation-eq-godunov">Eq.1.6</a>. Consequently, the value o this conservative vector must be fulfilled by other considerations.</p>
+<p>In the following, two examples are presented (in 1D) corresponding to “extrapolation (or zero flux)” and “wall’ boundary condition.</p>
+</div>
+<div class="section" id="extrapolation">
+<h2>5.2. Extrapolation<a class="headerlink" href="#extrapolation" title="Permalink to this headline">¶</a></h2>
+<p>This boundary condiion is very useful because allows all the waves to go out (roughly for subsonic flow, perfectly for supersonic flow) and is widely used. This boundary condtion is also nammed ‘zero flux’.</p>
+<p>The basic equation traduces a zero flux of all quantities :</p>
+<div class="math notranslate nohighlight">
+\[\vec{\nabla}U.{\vec{n}}_{C_W}=0\]</div>
+<p>with <em>U</em> the vector of the conservative variables. It is straightforward to obtain at the West (left) boundary condition: <span class="math notranslate nohighlight">\(\left.\frac{\partial U}{\partial x}\right)_W\approx\frac{U_1^n-U_0^n}{\Delta x}=0\)</span> :</p>
+<div class="math notranslate nohighlight">
+\[U_0^n = U_1^n\]</div>
+<p>and at the East boundary condition:</p>
+<p><span class="math notranslate nohighlight">\(\left.\frac{\partial U}{\partial x}\right)_E\approx\frac{U_{NX+1}^n-U_{NX}^n}{\Delta x}=0\)</span> :</p>
+<div class="math notranslate nohighlight">
+\[U_{NX+1}^n = U_{NX}^n\]</div>
+<p>There is no difficulty to extend these relations in the <em>y</em>-direction for 2D mesh. One can find in the 1D fortran code the following lines in <em>LIMGAZ</em> subroutine for the West boundary condition treatment:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DO IEQ=1,NEQ
+  VAR(0,IEQ)=VAR(1,IEQ)
+END DO
+</pre></div>
+</div>
+</div>
+<div class="section" id="wall-boundary-condition">
+<h2>5.3. Wall Boundary condition<a class="headerlink" href="#wall-boundary-condition" title="Permalink to this headline">¶</a></h2>
+<p>A wall is a surface that does not allow a flux of mass that is traduced by the equation : <span class="math notranslate nohighlight">\(\vec{u}.\vec{n}=0\)</span> on this surface. For a boundary condition it means that the normal velocity is equal to zero.</p>
+<dl class="docutils">
+<dt>The easiest way to ensure this property at a wall boundary condition is to impose in the gost cell:</dt>
+<dd><ul class="first last simple">
+<li>the same scalar quantities as in the inner cell</li>
+<li>impose the opposite normal velocity.</li>
+</ul>
+</dd>
+</dl>
+<p>In 1D, the normal velocity is simply the velocity in the <em>x</em>-direction: But pay attention for the projection on the local frame in 2D. At the west boundary condition, the conservative vector  <span class="math notranslate nohighlight">\(U_0\)</span> is computed thanks to the following relations:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{matrix}\rho_0=\rho_1\\E_0=E_1\\u_0=-u_1\\\end{matrix}\end{split}\]</div>
+<p>In the Fortran code one can read :</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DO IEQ=1,NEQ
+    VAR(0,IEQ)=VAR(1,IEQ)
+END DO
+   VAR(0,1)=-VAR(1,1)
+</pre></div>
+</div>
+</div></blockquote>
+<p>At the east boundary condition, one will probably find in the code:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DO IEQ=1,NEQ
+    VAR(NX+1,IEQ)=VAR(NX,IEQ)
+END DO
+   VAR(NX+1,1)=-VAR(NX,1)
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="chapitre4.html" class="btn btn-neutral float-left" title="4. Managing the fluxes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Eric Daniel - Aix-Marseille University / Polytech Marseille
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,167 @@
+***************************************
+General Finite Volume Formulation
+***************************************
+
+Introduction
+************
+
+
+We consider a system of partial differential equations under the following conservative form \:
+
+.. math:: \frac{\partial U}{\partial t}+\vec{\nabla}.\vec{F}(U)=0 
+  :label: eq_general
+
+
+define on a domain :math:`\mathcal{V}` with a contour :math:`\mathcal{C}_W`.
+
+For Euler's equations  \:
+
+:math:`U = U(\vec{OM}, t) = \left(\begin{matrix} \rho \vec{u} \\ \rho E\\ \rho  \end{matrix} \right)` 
+
+
+and 
+
+
+:math:`\vec{F} = \left( \begin{matrix}  \rho \vec{u} \vec{u} +p{\overline{\overline{I}}}_d \\ \rho \vec{u} \left(E+\frac{p}{\rho}\right) \\ \rho\vec{u} \\ \end{matrix} \right)`
+
+We seek a *weak solution* of this problem:
+:math:`\int_{\mathcal{V}}{\frac{\partial U}{\partial t}+\vec{\nabla}.\vec{F}(U)}dV=0`
+
+This equation is transformed thanks to  Green-Ostrogradski theorem \:
+
+.. math:: \int_{\mathcal{V}}{\frac{\partial U}{\partial t} }dV + \int_{\mathcal{C}_W}{ \vec{F}(U) . \vec{n}}dC=0
+   :label: eq_integrale_totale 
+
+
+Local equations
+***************
+
+Local equation in elemental volume
+==================================
+
+The equation :eq:`eq_integrale_totale` is plit over *N* elemental volumes (or cells) :math:`\mathcal{V}_I` \:
+
+:math:`\sum_{I =1,N}{\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}}=0`
+
+with *N* the total number of cells.
+
+To ensure this result one can write \:
+:math:`\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0` for each elementary volume :math:`\mathcal{V}_I`.
+
+One must take care of the boundaries of each cell that may be a part of the global contour  :math:`\mathcal{C}_W` that is to say a part of the boundary. This is expressed, in the local equation \:
+
+:math:`\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV} + \int_{\mathcal{C}_{int,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} + \int_{\mathcal{C}_{W,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} =0`
+
+
+The term :math:`\mathcal{C}_{int,I}` is for internal surfaces of the domain :math:`\mathcal{V}` while :math:`\mathcal{C}_{W,I}` is for boundary surface.  Obviously, :math:`\mathcal{C}_{int,I} \cup \mathcal{C}_{W,I} = \mathcal{C}_{I}` is the contour of the  elementary cell :math:`\mathcal{V}_{I}`.
+
+
+.. _figure_elementalCells:
+
+.. figure:: ./_static/chapitre1_img/elementalCells.jpg
+    :scale: 75%
+    :align: center
+
+    : A whole domain :math:`\mathcal{V}` with its contour :math:`\mathcal{C}_W` and its elemntal cells. In orange are the internal contours of the cells. The cell *I* has some internal contour :math:`\mathcal{C}_int,I` and a boundary contour (in red) :math:`\mathcal{C}_W,I`. Notice that the cell *M* has only internal contours. 
+
+.. hint::
+ One can notice :math:`\sum_{I}{\mathcal{C}_{W,I}} = \mathcal{C}_{W}`.
+
+The finite volume method consists in numerically solve the equation define for each elemental volume :
+
+
+.. math:: \int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV} + \int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} =0
+  :label: eq_locale
+
+ 
+
+Properties
+==========
+
+
+The summation of :eq:`eq_locale` over all the elemantary cells must lead to :eq:`eq_general` . 
+
+:math:`\sum_{I}\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\sum_{I}\int_{\mathcal{C}_{W,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}+\sum_{I}\int_{\mathcal{C}_{int,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0`
+
+The two first terms recovered :eq:`eq_general`. One must verify that the third integral with internal fluxes  is equal to zero.
+
+.. math:: \sum_{I}\int_{\mathcal{C}_{\mathcal{int},I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0
+  :label: eq_tocheck
+
+Let's consider the cell number *I*. Its associated term in this integral reads \:
+
+ :math:`\int_{\mathcal{C}_{\mathcal{int},I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}`. 
+
+
+The integral over :math:`\mathcal{C}_{int,I}` is split in a sum over partial countours :math:`\mathcal{C}_{int,I,k}`, labelled *k* \:
+
+
+:math:`\sum_{k}\int_{\mathcal{C}_{\mathcal{int},I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC}=0`
+
+(For example, the cell depicted in :numref:`figure_2Dcell`, which has no boundary part, *k* is varying for 1 to 4).
+
+Let's consider the cell *J*, a neighbour of cell *I*. In :eq:`eq_tocheck` let's isolate the summation over both cells *I* and *J* \:
+
+:math:`\sum_{k}\int_{\mathcal{C}_{\mathcal{int},I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC} + \sum_{k}\int_{\mathcal{C}_{\mathcal{int},J,k}}{\vec{F}\left(U\right).{\vec{n}}_{J,k}dC}`
+
+The contact between both cells *I* and *J* is done through a part of a common contour, corresponding to the index **K**. This part of contour is :math:`\mathcal{C}_{int,I,K}` or :math:`\mathcal{C}_{int,J,K}`. In the last equation, the contribution of this shared face is :
+
+:math:`\int_{\mathcal{C}_{\mathcal{int},I,K}}{\vec{F}\left(U\right).{\vec{n}}_{I,K}dC} + \int_{\mathcal{C}_{\mathcal{int},J,K}}{\vec{F}\left(U\right).{\vec{n}}_{J,K}dC}`. 
+
+.. _figure_cellsAndContours:
+
+.. figure:: ./_static/chapitre1_img/CellAndContour.jpg
+    :scale: 100%
+    :align: center
+
+    : Cells *I* and *J* in a domain  :math:`\mathcal{V}`. In dashed green lines, the internal contours and in solid blue lines the boundary contours of each cell. Here, the common face of cell *I* and *J* is the face number 2 in cell *I* and the face number *4* in cell *J*. The numbering will be detailed in :ref:`mesh_section` 
+
+
+To ensure the property of :eq:`eq_tocheck`, one must have:
+
+:math:`\int_{\mathcal{C}_{\mathcal{int},I,K}}{\vec{F}\left(U\right).{\vec{n}}_{I,K}dC} + \int_{\mathcal{C}_{\mathcal{int},J,K}}{\vec{F}\left(U\right).{\vec{n}}_{J,K}dC} = 0`. 
+
+One can obvisouly remark that their normal vectors verify \: :math:`\vec{n}_{I,K} = - \vec{n}_{J,K}`. Then, because this is the same contour *K*, one must verify \:
+
+:math:`\int_{\mathcal{C}_{\mathcal{int},I,K} \equiv \mathcal{C}_{\mathcal{int},J,K} }{ \left\{ \vec{F}_I\left(U\right).{\vec{n}}_{I,K}+\vec{F}_J\left(U\right).{\vec{n}}_{J,K} \right\} dC}=0`. 
+
+ .. math:: \boxed{\vec{F}_I\left(U\right).{\vec{n}}_{I,K} + \vec{F}_J\left(U\right).{\vec{n}}_{J,K}=0}
+   :label: eq_egalite_flu
+
+.. important:: 
+  On the same face of two neighbouring cells the fluxes vanish.
+
+Discrete Formulation
+********************
+
+The discretization is the process leading to a numerical represention of the problem of :eq:`eq_locale` in the computationnal domain in a form suitable for computing.
+Let's define \:
+
+:math:`U_i^n=\frac{1}{\mathcal{V}_i}\int_{\mathcal{V}_i}{U(\vec{OM},\ t)dV}=\frac{1}{\mathcal{V}_i}\int_{\mathcal{V}_i}UdV`
+
+Because :math:`\mathcal{V}_i` is a fixed volume, the temporal term of :eq:`eq_locale` is \:
+
+ :math:`\int_{\mathcal{V}_i}{\frac{\partial U}{\partial t}}dV=\frac{\partial}{\partial t} \int_{\mathcal{V}_i}{U}dV=\frac{\partial U_i^n \mathcal{V}_i }{\partial t}=\frac{\partial U_i^n }{\partial t} \mathcal{V}_i`
+
+One can approximate this derivative by a forwards 1rst order formulae \:
+:math:`\frac{\partial U_i^n}{\partial t}V_i\approx\frac{U_i^{n+1}-U_i^n}{\Delta t}V_i`
+
+In this relation, :math:`\Delta t` is the timestep that must be carefully chosen to avoid unstable behavior of the solution.
+
+The integral over the contour of each cell \:
+:math:`\int_{\mathcal{C}_I}{\vec{F}\left(U\right).{\vec{n}}_IdC}=\sum_{k}\int_{\mathcal{C}_{I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC}` is now approximate by :
+
+:math:`\int_{\mathcal{C}_I}{\vec{F}\left(U\right).{\vec{n}}_IdC}=\sum_{k}{{\vec{F}}_{I,k}.{\vec{n}}_{I,k}\int_{\mathcal{C}_{I,k}} d C=\sum_{k}{{\vec{F}}_{I,k}.{\vec{n}}_{I,k}A_{I,k}}}`
+
+where :math:`A_{I,k}` is the area of the k-*th* part of the contour. It means that **all the flow quantities are supposed constant along the k-** *th* **part of the contour**.
+ 
+:math:`\vec{F}_{I,k}` is the vector of the fluxes evaluated on this surface. Numerically, the exact or an approximate solution of a Riemann problem provides an excellent solution. Then one must locally solve the following discrete equation:
+
+.. math:: U_i^{n+1}=U_i^n-\frac{\Delta t}{V_i}\sum_{k=1, N_{face}}{{\vec{F}}_{i,k}.{\vec{n}}_{i,k}A_{I,k}}
+  :label: eq_godunov
+
+.. important:: 
+  The fluxes :math:`\vec{F}_{i,k}` depend on the conservative vector :math:`U_i` but also on the neighbour of cell *i* at face *k*, that is to say *i+1* or *i-1* according the face considered (and in 1D). One then must read in :eq:`eq_godunov`:
+
+.. math:: {\vec{F}}_{i,k} =  \vec{F}_{i,k}(U_i^n , U_{i\pm1}^n )
+  :label: eq_expression_flux

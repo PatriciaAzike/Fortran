@@ -1,0 +1,82 @@
+**************************************
+Projection of momentum equation
+**************************************
+
+Introduction
+============
+
+
+The momentum equation is a vectorial equation that must be projected on a fixed set of axes :math:`\mathcal{R}` with  its base frame :math:`(\mathcal{O}, \vec{i}, \vec{j})`.  Nevertheless, the computation of the fluxes is done is a local frame :math:`(\mathcal{O'}, \vec{n}, \vec{\tau})`, the vector :math:`\vec{n}` is the exiting normal vector to the k-*th* face of the :math:`\mathcal{V}_i` elemental volume.
+
+
+.. _figure_localaxes:
+
+.. figure:: ./_static/chapitre3_img/fixed_local_frame.jpg
+    :scale: 100%
+    :align: center
+
+    Projection of the local frame in the fixed frame.
+
+    The projection rules are :
+
+.. math:: \left\{\begin{matrix}\vec{n}=cos(\theta)\vec{i}+sin(\theta)\vec{j}\\\vec{\tau}=-sin(\theta)\vec{i}+cos(\theta)\vec{j}\\\end{matrix}\right.
+   :label: eq_local_in_fixed
+
+
+and reversely :
+
+
+.. math:: \left\{\begin{matrix}\vec{i}=cos(\theta)\vec{n}\ -\ sin(\theta)\vec{\tau}\\\ \vec{j}=sin(\theta)\vec{n\ }\ +\ cos(\theta)\vec{\tau}\\\end{matrix}\right.
+    :label: local
+
+
+Momentum equation
+=================
+
+
+We develop and project the momentum equation for perfect fluid in its discrete form given by :eq:`eq_godunov` applied to the momentum component of the :math:`U` vector:
+:math:`\vec{\rho u}_i^{n+1}=\vec{\rho u}_i^n-\frac{\Delta t}{V_i}\sum_{k=1, N_{face}}{{\vec{F}}_{i,k}(\vec{\rho V}).{\vec{n}}_{i,k}A_{I,k}}`
+
+The expression of flux of the velocity field is given by \:
+:math:`{\vec{F}}_{i,k}(\vec{\rho u})= \left( \vec{u}\vec{u} + p {\bar{\bar{I_d}}} \right)_{i,k}^*`. 
+
+The **upperscript \*** means that this flux is evaluated at the cell boundary (namely face *k*)  with an appropriate formulation. The formulation of the flux solution is out of the topic of this course which is reduced to extend existing solutions. Such solutions are given by Riemann solvers (exact or approximate). This solution is obtained in the local frame associated to the considered face. Without any ambiguous notation, the flux formulae can be reduced to :
+:math:`{\vec{F}}_{i,k}(\vec{\rho u})={\vec{F}}_{k}(\vec{\rho u})= \left( \vec{u}\vec{u} + p {\bar{\bar{I_d}}} \right)_k^* =  \vec{u}^*\vec{u}^* + p^* {\bar{\bar{I_d}}}` 
+
+The velocity vector solution is projected in the local vector \:
+
+:math:`\vec{u}^* = u^*\vec{n}_k + v^*\vec{\tau}_k` then
+:math:`\left( \rho \vec{u} \vec{u} \right)^* . \vec{n}_k = {\rho}_k^* u_k^* \vec{u}_k^*`.
+
+In the same way for the pressure tensor :
+
+:math:`\left( p {\bar{\bar{I_d}}} \right)^* . \vec{n}_k = p_k^* \vec{n}_k`.
+
+Then, the numerical scheme can be developed according :
+
+:math:`\frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i=\ \sum_{k=1,Nface}{\left(\rho_k^*u_k^*{\vec{u}}_k^*+p_k^*{\vec{n}}_k\right)A_k}`
+
+The projection of the vector :math:`u_k^*{\vec{u}}_k^*` leads to :
+
+.. math:: \frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i=\ \sum_{k=1,Nface}{\left(\rho_k^*u_k^*u_k^*+p_k^*\right)A_k\ {\vec{n}}_k+\rho_k^*u_k^*v_k^*A_k\ {\vec{\tau}}_k}
+   :label: eq_qdm_projetee_mix
+
+
+In this last equation, the left-hand-side is computed in the basis vectors :math:`(\mathcal{R}, \vec{i}, \vec{j})` which is the frame of the lab, while the right-hand-side is computed in the local basis (associated to the face) :math:`(\mathcal{R'}, \vec{n}, \vec{\tau})`. We finally obtain the numerical scheme (1rst order in time):
+
+.. math:: \begin{matrix}\frac{{\rho\vec{u}}_i^{n+1}-\ {\rho\vec{u}}_i^n}{\Delta t}V_i\ \\=\\\sum_{k=1,Nface}{\begin{matrix}\left[\rho_k^*u_k^*A_k\left\{u_k^*cos(\theta_k)\ -\ v_k^*sin(\theta_k)\right\}+p_k^*\ cos(\theta_k)A_k\right]\ \vec{i}\\\left[\rho_k^*u_k^*A_k\left\{u_k^*sin(\theta_k)\ +\ v_k^*cos(\theta_k)\right\}+p_k^*\ sin(\theta_k)A_k\right]\ \vec{j}\\\end{matrix}+}\\\end{matrix}
+  :label: eq_qdm_projetee_fixe
+
+
+
+.. note::
+   Then, in 1D (in the *x*-direction), only the component on :math:`\vec{i}` of the momentum flux is remaining and equal to :math:`\left[\rho_k^*u_k^{*2}A_k+p_k^*\ A_k\right]\ (\pm)\vec{i}` (because :math:`{\vec{n}}_k=\pm\vec{i}\Longleftrightarrow\theta=0+k\pi` while :math:`\vec{\tau}_k=\vec{0}` and also :math:`v=0`).
+
+.. hint::
+ The projections of the velocity vector are :
+ :math:`\vec{u}=u\vec{i}+v\ \vec{j}=\left[ucos(\theta)+vsin(\theta)\right]\vec{n}\ +\left[-usin(\theta)+vcos(\theta)\right]\vec{\tau}` that yields :
+ :math:`\left\{\begin{matrix}u^*=u cos(\theta)+v sin(\theta)\\ v^*=-u sin(\theta)+v cos(\theta)\\ \end{matrix}\right.`
+
+ and reversely\:
+
+ :math:`\left\{\begin{matrix}u=u^*cos(\theta)-v^*sin(\theta)\\v=u^*sin(\theta)+v^*cos(\theta)\\\end{matrix}\right.`

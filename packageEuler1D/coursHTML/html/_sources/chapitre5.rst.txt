@@ -1,0 +1,113 @@
+.. _BC_section:
+
+*******************
+Boundary Conditions
+*******************
+
+Introduction
+============
+
+The boundary condition treatment is necessary to give a value at the fluxes located at the contour intersecting the boundaries of the domain :math:`\mathcal{C}_W` on segments :math:`\mathcal{C}_{W,I}`. Here, we will impose the values in ghost cells that insure the required value of the fluxes. It is for this reason that in the 1D code, all the conservative variables are numbered from *0* to *Nx+1*:
+
+ * *i* index varying from 1 to Nx refers to an inside cell
+ * *i* index equal to zero refers to the left (or West) boundary condition
+ * *i* index equal to *Nx+1* refers to the right ( East) boundary conditions
+
+
+For *i* varying from *1* to *NX* the general discrete euqation :eq:`eq_godunov` is applied, while for *i=0* and *i=Nx+1* a specific numerical treatment is achieved. They are called **ghost cells** because they do not exist in the continuous (actual) domain.
+
+
+.. figure:: _static/chapitre5_img/WestBC.jpg
+    :scale: 75%
+    :align: center
+
+    West Boundary condution with a ghost cell (I=0)
+
+
+Let's develop :eq:`eq_godunov` for cell *i=1* \:
+
+:math:`U_1^{n+1}=U_1^n+\frac{\Delta t}{V_{1}}\sum_{k=2,4,2}{{\vec{F}}_{1,k}.{\vec{n}}_{1,k}A_{1,k}}`
+
+.. hint::
+ The expression :math:`\sum_{k=2,4,2}{}` means that in the summation (or in the loop) *k* varies from 2 to 4 with an increment equal to 2 (then, *k=2* and *4*)
+
+and with :eq:`eq_expression_flux`
+
+:math:`U_1^{n+1}=U_1^n+\frac{\Delta t}{V_1}\left({\vec{F}}_{1,2}.{\vec{n}}_{1,2}A_{1,2}+{\vec{F}}_{1,4}.{\vec{n}}_{1,4}A_{1,4}\right)`
+
+For the 1D scheme we  have \::math:`\begin{matrix}{\vec{n}}_{1,2}=-{\vec{n}}_{1,4}=\vec{i}\\A_{1,2}=A_{1,4}=1\\\end{matrix}`
+
+According :eq:`eq_expression_flux`, the flux at the right face (face 2) is 
+
+.. math:: {\vec{F}}_{1,2}=\vec{F}(U_1^n,\ U_2^n)
+
+while the flux at face 4 (left face) is \:
+
+.. math:: {\vec{F}}_{1,4}=\vec{F}(U_1^n, U_0^n)
+
+In this last relation :math:`U_0^n` is not defined by the numerical scheme :eq:`eq_godunov`. Consequently, the value o this conservative vector must be fulfilled by other considerations.
+
+In the following, two examples are presented (in 1D) corresponding to "extrapolation (or zero flux)" and "wall' boundary condition.   
+
+
+Extrapolation
+=============
+
+This boundary condiion is very useful because allows all the waves to go out (roughly for subsonic flow, perfectly for supersonic flow) and is widely used. This boundary condtion is also nammed 'zero flux'.
+
+The basic equation traduces a zero flux of all quantities \:
+
+.. math:: \vec{\nabla}U.{\vec{n}}_{C_W}=0 
+
+with *U* the vector of the conservative variables. It is straightforward to obtain at the West (left) boundary condition\: :math:`\left.\frac{\partial U}{\partial x}\right)_W\approx\frac{U_1^n-U_0^n}{\Delta x}=0` \:
+
+.. math:: U_0^n = U_1^n
+
+and at the East boundary condition:
+
+:math:`\left.\frac{\partial U}{\partial x}\right)_E\approx\frac{U_{NX+1}^n-U_{NX}^n}{\Delta x}=0` \:
+
+.. math:: U_{NX+1}^n = U_{NX}^n
+
+There is no difficulty to extend these relations in the *y*-direction for 2D mesh. One can find in the 1D fortran code the following lines in *LIMGAZ* subroutine for the West boundary condition treatment:
+
+.. code-block:: none
+
+    DO IEQ=1,NEQ
+      VAR(0,IEQ)=VAR(1,IEQ)
+    END DO
+
+
+Wall Boundary condition
+=======================
+
+A wall is a surface that does not allow a flux of mass that is traduced by the equation \: :math:`\vec{u}.\vec{n}=0` on this surface. For a boundary condition it means that the normal velocity is equal to zero.
+
+The easiest way to ensure this property at a wall boundary condition is to impose in the gost cell:
+ * the same scalar quantities as in the inner cell
+ * impose the opposite normal velocity.
+
+In 1D, the normal velocity is simply the velocity in the *x*-direction: But pay attention for the projection on the local frame in 2D. At the west boundary condition, the conservative vector  :math:`U_0` is computed thanks to the following relations:
+
+.. math:: \begin{matrix}\rho_0=\rho_1\\E_0=E_1\\u_0=-u_1\\\end{matrix}
+
+In the Fortran code one can read :
+
+ .. code-block:: none
+
+        DO IEQ=1,NEQ
+            VAR(0,IEQ)=VAR(1,IEQ)
+        END DO
+           VAR(0,1)=-VAR(1,1)
+
+At the east boundary condition, one will probably find in the code:
+
+ .. code-block:: none
+
+      DO IEQ=1,NEQ
+          VAR(NX+1,IEQ)=VAR(NX,IEQ)
+      END DO
+         VAR(NX+1,1)=-VAR(NX,1)
+
+
+

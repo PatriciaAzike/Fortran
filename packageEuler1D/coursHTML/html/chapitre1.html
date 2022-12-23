@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>1. General Finite Volume Formulation &mdash; Finite Volume method : from 1D to 2D  0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/ericStyle.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. Mesh" href="chapitre2.html" />
+    <link rel="prev" title="Package to download" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Finite Volume method : from 1D to 2D 
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">The chapters</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. General Finite Volume Formulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">1.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-equations">1.2. Local equations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#local-equation-in-elemental-volume">1.2.1. Local equation in elemental volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#properties">1.2.2. Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#discrete-formulation">1.3. Discrete Formulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre2.html">2. Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre3.html">3. Projection of momentum equation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre4.html">4. Managing the fluxes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapitre5.html">5. Boundary Conditions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Finite Volume method : from 1D to 2D </a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>1. General Finite Volume Formulation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/chapitre1.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-finite-volume-formulation">
+<h1>1. General Finite Volume Formulation<a class="headerlink" href="#general-finite-volume-formulation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>1.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>We consider a system of partial differential equations under the following conservative form :</p>
+<div class="math notranslate nohighlight" id="equation-eq-general">
+<span class="eqno">(1.1)<a class="headerlink" href="#equation-eq-general" title="Permalink to this equation">¶</a></span>\[\frac{\partial U}{\partial t}+\vec{\nabla}.\vec{F}(U)=0\]</div>
+<p>define on a domain <span class="math notranslate nohighlight">\(\mathcal{V}\)</span> with a contour <span class="math notranslate nohighlight">\(\mathcal{C}_W\)</span>.</p>
+<p>For Euler’s equations  :</p>
+<p><span class="math notranslate nohighlight">\(U = U(\vec{OM}, t) = \left(\begin{matrix} \rho \vec{u} \\ \rho E\\ \rho  \end{matrix} \right)\)</span></p>
+<p>and</p>
+<p><span class="math notranslate nohighlight">\(\vec{F} = \left( \begin{matrix}  \rho \vec{u} \vec{u} +p{\overline{\overline{I}}}_d \\ \rho \vec{u} \left(E+\frac{p}{\rho}\right) \\ \rho\vec{u} \\ \end{matrix} \right)\)</span></p>
+<p>We seek a <em>weak solution</em> of this problem:
+<span class="math notranslate nohighlight">\(\int_{\mathcal{V}}{\frac{\partial U}{\partial t}+\vec{\nabla}.\vec{F}(U)}dV=0\)</span></p>
+<p>This equation is transformed thanks to  Green-Ostrogradski theorem :</p>
+<div class="math notranslate nohighlight" id="equation-eq-integrale-totale">
+<span class="eqno">(1.2)<a class="headerlink" href="#equation-eq-integrale-totale" title="Permalink to this equation">¶</a></span>\[\int_{\mathcal{V}}{\frac{\partial U}{\partial t} }dV + \int_{\mathcal{C}_W}{ \vec{F}(U) . \vec{n}}dC=0\]</div>
+</div>
+<div class="section" id="local-equations">
+<h2>1.2. Local equations<a class="headerlink" href="#local-equations" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="local-equation-in-elemental-volume">
+<h3>1.2.1. Local equation in elemental volume<a class="headerlink" href="#local-equation-in-elemental-volume" title="Permalink to this headline">¶</a></h3>
+<p>The equation <a class="reference internal" href="#equation-eq-integrale-totale">Eq.1.2</a> is plit over <em>N</em> elemental volumes (or cells) <span class="math notranslate nohighlight">\(\mathcal{V}_I\)</span> :</p>
+<p><span class="math notranslate nohighlight">\(\sum_{I =1,N}{\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}}=0\)</span></p>
+<p>with <em>N</em> the total number of cells.</p>
+<p>To ensure this result one can write :
+<span class="math notranslate nohighlight">\(\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0\)</span> for each elementary volume <span class="math notranslate nohighlight">\(\mathcal{V}_I\)</span>.</p>
+<p>One must take care of the boundaries of each cell that may be a part of the global contour  <span class="math notranslate nohighlight">\(\mathcal{C}_W\)</span> that is to say a part of the boundary. This is expressed, in the local equation :</p>
+<p><span class="math notranslate nohighlight">\(\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV} + \int_{\mathcal{C}_{int,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} + \int_{\mathcal{C}_{W,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} =0\)</span></p>
+<p>The term <span class="math notranslate nohighlight">\(\mathcal{C}_{int,I}\)</span> is for internal surfaces of the domain <span class="math notranslate nohighlight">\(\mathcal{V}\)</span> while <span class="math notranslate nohighlight">\(\mathcal{C}_{W,I}\)</span> is for boundary surface.  Obviously, <span class="math notranslate nohighlight">\(\mathcal{C}_{int,I} \cup \mathcal{C}_{W,I} = \mathcal{C}_{I}\)</span> is the contour of the  elementary cell <span class="math notranslate nohighlight">\(\mathcal{V}_{I}\)</span>.</p>
+<div class="figure align-center" id="id1">
+<span id="figure-elementalcells"></span><a class="reference internal image-reference" href="_images/elementalCells.jpg"><img alt="_images/elementalCells.jpg" src="_images/elementalCells.jpg" style="width: 564.0px; height: 474.75px;" /></a>
+<p class="caption"><span class="caption-number">Figure 1.1 </span><span class="caption-text">: A whole domain <span class="math notranslate nohighlight">\(\mathcal{V}\)</span> with its contour <span class="math notranslate nohighlight">\(\mathcal{C}_W\)</span> and its elemntal cells. In orange are the internal contours of the cells. The cell <em>I</em> has some internal contour <span class="math notranslate nohighlight">\(\mathcal{C}_int,I\)</span> and a boundary contour (in red) <span class="math notranslate nohighlight">\(\mathcal{C}_W,I\)</span>. Notice that the cell <em>M</em> has only internal contours.</span></p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">One can notice <span class="math notranslate nohighlight">\(\sum_{I}{\mathcal{C}_{W,I}} = \mathcal{C}_{W}\)</span>.</p>
+</div>
+<p>The finite volume method consists in numerically solve the equation define for each elemental volume :</p>
+<div class="math notranslate nohighlight" id="equation-eq-locale">
+<span class="eqno">(1.3)<a class="headerlink" href="#equation-eq-locale" title="Permalink to this equation">¶</a></span>\[\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV} + \int_{\mathcal{C}_{I}}{\vec{F}\left(U\right).{\vec{n}}_IdC} =0\]</div>
+</div>
+<div class="section" id="properties">
+<h3>1.2.2. Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h3>
+<p>The summation of <a class="reference internal" href="#equation-eq-locale">Eq.1.3</a> over all the elemantary cells must lead to <a class="reference internal" href="#equation-eq-general">Eq.1.1</a> .</p>
+<p><span class="math notranslate nohighlight">\(\sum_{I}\int_{\mathcal{V}_I}{\frac{\partial U}{\partial t}dV}+\sum_{I}\int_{\mathcal{C}_{W,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}+\sum_{I}\int_{\mathcal{C}_{int,I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0\)</span></p>
+<p>The two first terms recovered <a class="reference internal" href="#equation-eq-general">Eq.1.1</a>. One must verify that the third integral with internal fluxes  is equal to zero.</p>
+<div class="math notranslate nohighlight" id="equation-eq-tocheck">
+<span class="eqno">(1.4)<a class="headerlink" href="#equation-eq-tocheck" title="Permalink to this equation">¶</a></span>\[\sum_{I}\int_{\mathcal{C}_{\mathcal{int},I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}=0\]</div>
+<p>Let’s consider the cell number <em>I</em>. Its associated term in this integral reads :</p>
+<blockquote>
+<div><span class="math notranslate nohighlight">\(\int_{\mathcal{C}_{\mathcal{int},I}}{\vec{F}\left(U\right).{\vec{n}}_IdC}\)</span>.</div></blockquote>
+<p>The integral over <span class="math notranslate nohighlight">\(\mathcal{C}_{int,I}\)</span> is split in a sum over partial countours <span class="math notranslate nohighlight">\(\mathcal{C}_{int,I,k}\)</span>, labelled <em>k</em> :</p>
+<p><span class="math notranslate nohighlight">\(\sum_{k}\int_{\mathcal{C}_{\mathcal{int},I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC}=0\)</span></p>
+<p>(For example, the cell depicted in <a class="reference internal" href="chapitre2.html#figure-2dcell"><span class="std std-numref">Figure 2.3</span></a>, which has no boundary part, <em>k</em> is varying for 1 to 4).</p>
+<p>Let’s consider the cell <em>J</em>, a neighbour of cell <em>I</em>. In <a class="reference internal" href="#equation-eq-tocheck">Eq.1.4</a> let’s isolate the summation over both cells <em>I</em> and <em>J</em> :</p>
+<p><span class="math notranslate nohighlight">\(\sum_{k}\int_{\mathcal{C}_{\mathcal{int},I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC} + \sum_{k}\int_{\mathcal{C}_{\mathcal{int},J,k}}{\vec{F}\left(U\right).{\vec{n}}_{J,k}dC}\)</span></p>
+<p>The contact between both cells <em>I</em> and <em>J</em> is done through a part of a common contour, corresponding to the index <strong>K</strong>. This part of contour is <span class="math notranslate nohighlight">\(\mathcal{C}_{int,I,K}\)</span> or <span class="math notranslate nohighlight">\(\mathcal{C}_{int,J,K}\)</span>. In the last equation, the contribution of this shared face is :</p>
+<p><span class="math notranslate nohighlight">\(\int_{\mathcal{C}_{\mathcal{int},I,K}}{\vec{F}\left(U\right).{\vec{n}}_{I,K}dC} + \int_{\mathcal{C}_{\mathcal{int},J,K}}{\vec{F}\left(U\right).{\vec{n}}_{J,K}dC}\)</span>.</p>
+<div class="figure align-center" id="id2">
+<span id="figure-cellsandcontours"></span><a class="reference internal image-reference" href="_images/CellAndContour.jpg"><img alt="_images/CellAndContour.jpg" src="_images/CellAndContour.jpg" style="width: 549.0px; height: 467.0px;" /></a>
+<p class="caption"><span class="caption-number">Figure 1.2 </span><span class="caption-text">: Cells <em>I</em> and <em>J</em> in a domain  <span class="math notranslate nohighlight">\(\mathcal{V}\)</span>. In dashed green lines, the internal contours and in solid blue lines the boundary contours of each cell. Here, the common face of cell <em>I</em> and <em>J</em> is the face number 2 in cell <em>I</em> and the face number <em>4</em> in cell <em>J</em>. The numbering will be detailed in <a class="reference internal" href="chapitre2.html#mesh-section"><span class="std std-ref">Mesh</span></a></span></p>
+</div>
+<p>To ensure the property of <a class="reference internal" href="#equation-eq-tocheck">Eq.1.4</a>, one must have:</p>
+<p><span class="math notranslate nohighlight">\(\int_{\mathcal{C}_{\mathcal{int},I,K}}{\vec{F}\left(U\right).{\vec{n}}_{I,K}dC} + \int_{\mathcal{C}_{\mathcal{int},J,K}}{\vec{F}\left(U\right).{\vec{n}}_{J,K}dC} = 0\)</span>.</p>
+<p>One can obvisouly remark that their normal vectors verify : <span class="math notranslate nohighlight">\(\vec{n}_{I,K} = - \vec{n}_{J,K}\)</span>. Then, because this is the same contour <em>K</em>, one must verify :</p>
+<p><span class="math notranslate nohighlight">\(\int_{\mathcal{C}_{\mathcal{int},I,K} \equiv \mathcal{C}_{\mathcal{int},J,K} }{ \left\{ \vec{F}_I\left(U\right).{\vec{n}}_{I,K}+\vec{F}_J\left(U\right).{\vec{n}}_{J,K} \right\} dC}=0\)</span>.</p>
+<blockquote>
+<div><div class="math notranslate nohighlight" id="equation-eq-egalite-flu">
+<span class="eqno">(1.5)<a class="headerlink" href="#equation-eq-egalite-flu" title="Permalink to this equation">¶</a></span>\[\boxed{\vec{F}_I\left(U\right).{\vec{n}}_{I,K} + \vec{F}_J\left(U\right).{\vec{n}}_{J,K}=0}\]</div>
+</div></blockquote>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">On the same face of two neighbouring cells the fluxes vanish.</p>
+</div>
+</div>
+</div>
+<div class="section" id="discrete-formulation">
+<h2>1.3. Discrete Formulation<a class="headerlink" href="#discrete-formulation" title="Permalink to this headline">¶</a></h2>
+<p>The discretization is the process leading to a numerical represention of the problem of <a class="reference internal" href="#equation-eq-locale">Eq.1.3</a> in the computationnal domain in a form suitable for computing.
+Let’s define :</p>
+<p><span class="math notranslate nohighlight">\(U_i^n=\frac{1}{\mathcal{V}_i}\int_{\mathcal{V}_i}{U(\vec{OM},\ t)dV}=\frac{1}{\mathcal{V}_i}\int_{\mathcal{V}_i}UdV\)</span></p>
+<p>Because <span class="math notranslate nohighlight">\(\mathcal{V}_i\)</span> is a fixed volume, the temporal term of <a class="reference internal" href="#equation-eq-locale">Eq.1.3</a> is :</p>
+<blockquote>
+<div><span class="math notranslate nohighlight">\(\int_{\mathcal{V}_i}{\frac{\partial U}{\partial t}}dV=\frac{\partial}{\partial t} \int_{\mathcal{V}_i}{U}dV=\frac{\partial U_i^n \mathcal{V}_i }{\partial t}=\frac{\partial U_i^n }{\partial t} \mathcal{V}_i\)</span></div></blockquote>
+<p>One can approximate this derivative by a forwards 1rst order formulae :
+<span class="math notranslate nohighlight">\(\frac{\partial U_i^n}{\partial t}V_i\approx\frac{U_i^{n+1}-U_i^n}{\Delta t}V_i\)</span></p>
+<p>In this relation, <span class="math notranslate nohighlight">\(\Delta t\)</span> is the timestep that must be carefully chosen to avoid unstable behavior of the solution.</p>
+<p>The integral over the contour of each cell :
+<span class="math notranslate nohighlight">\(\int_{\mathcal{C}_I}{\vec{F}\left(U\right).{\vec{n}}_IdC}=\sum_{k}\int_{\mathcal{C}_{I,k}}{\vec{F}\left(U\right).{\vec{n}}_{I,k}dC}\)</span> is now approximate by :</p>
+<p><span class="math notranslate nohighlight">\(\int_{\mathcal{C}_I}{\vec{F}\left(U\right).{\vec{n}}_IdC}=\sum_{k}{{\vec{F}}_{I,k}.{\vec{n}}_{I,k}\int_{\mathcal{C}_{I,k}} d C=\sum_{k}{{\vec{F}}_{I,k}.{\vec{n}}_{I,k}A_{I,k}}}\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(A_{I,k}\)</span> is the area of the k-<em>th</em> part of the contour. It means that <strong>all the flow quantities are supposed constant along the k-</strong> <em>th</em> <strong>part of the contour</strong>.</p>
+<p><span class="math notranslate nohighlight">\(\vec{F}_{I,k}\)</span> is the vector of the fluxes evaluated on this surface. Numerically, the exact or an approximate solution of a Riemann problem provides an excellent solution. Then one must locally solve the following discrete equation:</p>
+<div class="math notranslate nohighlight" id="equation-eq-godunov">
+<span class="eqno">(1.6)<a class="headerlink" href="#equation-eq-godunov" title="Permalink to this equation">¶</a></span>\[U_i^{n+1}=U_i^n-\frac{\Delta t}{V_i}\sum_{k=1, N_{face}}{{\vec{F}}_{i,k}.{\vec{n}}_{i,k}A_{I,k}}\]</div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">The fluxes <span class="math notranslate nohighlight">\(\vec{F}_{i,k}\)</span> depend on the conservative vector <span class="math notranslate nohighlight">\(U_i\)</span> but also on the neighbour of cell <em>i</em> at face <em>k</em>, that is to say <em>i+1</em> or <em>i-1</em> according the face considered (and in 1D). One then must read in <a class="reference internal" href="#equation-eq-godunov">Eq.1.6</a>:</p>
+</div>
+<div class="math notranslate nohighlight" id="equation-eq-expression-flux">
+<span class="eqno">(1.7)<a class="headerlink" href="#equation-eq-expression-flux" title="Permalink to this equation">¶</a></span>\[{\vec{F}}_{i,k} =  \vec{F}_{i,k}(U_i^n , U_{i\pm1}^n )\]</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="chapitre2.html" class="btn btn-neutral float-right" title="2. Mesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Package to download" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Eric Daniel - Aix-Marseille University / Polytech Marseille
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
